@@ -23,6 +23,7 @@ No build step and no dependencies — plain ES modules, served as files.
     src/render.js       layout to SVG — reads positions, never computes them
     src/ui.js           header, branch tree, tooltip, detail panel
     src/camera.js       pan, zoom, and the two framings
+    src/animate.js      springs the drawing from one layout to the next
     src/app.js          a setting changed: recompute, then redraw
     src/main.js         entry point and control wiring
     data/thesis.json    the project file
@@ -73,11 +74,16 @@ Rules the renderer applies:
 ## Layout
 
 **Lanes are reused.** A branch takes the first row that is free for its span, so a row can
-carry several branches over the life of the project — with one constraint that keeps the
-hierarchy readable: *a sub-branch always lands strictly below its parent*. Branches are
-placed in fork order, which guarantees a parent is already placed when its children are
-considered. In the sample data this packs 11 branches into 5 rows, and the one branch still
-open stays near the top instead of drifting to the bottom of the canvas.
+carry several branches over the life of the project. Rows are *signed* — negative above the
+trunk, positive below — and two rules keep the tree readable: a sub-branch stays on the same
+side of the trunk as its parent, and always lands further out than it. Branches are placed in
+fork order, which guarantees a parent is already placed when its children are considered. In
+the sample data this packs 11 branches into 5 rows, and the one branch still open stays near
+the trunk instead of drifting to the bottom of the canvas.
+
+The `branches` setting decides which signs are on offer: `below` (positive only), `above`
+(negative only) or `both sides`. Both sides reads more like a tree, but costs a row here —
+splitting across two sides halves the chances of reusing one.
 
 The sidebar is the opposite view: a depth-first tree with collapsible subtrees, independent
 of which row a branch ended up on.
@@ -114,4 +120,5 @@ trailing off, so a thread that stopped is distinguishable at a glance from one s
 | time spacing — **even** | constant distance between consecutive events; month ticks are then placed wherever the month happens to turn over |
 | label placement — **auto** | edge-aware (the table above), with nodes free of cross-lane edges going to whichever side needs the lower tier |
 | label placement — above / below | force one side; label-vs-label packing still holds, but labels will cross their own merge or fork curves |
-| sun / moon | light and dark palette. Branch colours are tuned for the dark canvas and darkened on the fly for light; the choice is remembered in `localStorage` |
+| branches | which side of the trunk they hang from: below, above, or both |
+| sun / moon switch | light and dark palette. Branch colours are tuned for the dark canvas and darkened on the fly for light; the choice is remembered in `localStorage` |

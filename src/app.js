@@ -3,5 +3,9 @@
 import { S } from './state.js';
 import { layout } from './layout.js';
 import { render } from './render.js';
+import { transition } from './animate.js';
 
-export function relayout(){ S.layout = layout(); render(); }
+/** a setting changed: recompute, redraw, and spring from the old picture to the new */
+export function relayout(){
+  transition(() => { S.layout = layout(); render(); });
+}

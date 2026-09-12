@@ -86,37 +86,61 @@ export function layout(){
                    title:{lines, w, right, left: right - w}});
   }
 
-  // --- lanes: reuse a row as soon as its previous occupant is finished, but a
-  //     sub-branch always lands strictly below its parent so the tree still reads
-  //     downwards. Branches are placed in fork order, which guarantees a parent
-  //     is already placed when its children are considered.
-  const placed = [];                                  // per lane: list of [left,right]
+  // --- lanes: reuse a row as soon as its previous occupant is finished. Two rules
+  //     keep the tree readable: a sub-branch stays on the same side of the trunk as
+  //     its parent, and always lands further out than it. Rows are signed — negative
+  //     above the trunk, positive below — so `branchSide` only changes which signs
+  //     are on offer.
+  const placed = new Map();                           // signed row -> [[lo,hi], ...]
   const laneOf = new Map();
   const root = [...S.branches.keys()].find(b => !parentB.get(b));
-  laneOf.set(root, 0); placed[0] = [[-1e9, 1e9]];      // the trunk owns row 0 outright
+  laneOf.set(root, 0); placed.set(0, [[-1e9, 1e9]]);
+
+  const vacant = (row, lo, hi) => !(placed.get(row) || []).some(([a,b]) => lo < b && hi > a);
+  const seek = (side, from, lo, hi) => { let L = from; while (!vacant(side*L, lo, hi)) L++; return L; };
+  const load = {'-1':0, '1':0};
+
   const chrono = [...S.branches.keys()].filter(b => b !== root && span.has(b))
                    .sort((a,b) => span.get(a).title.left - span.get(b).title.left);
   for (const bid of chrono){
     const sp = span.get(bid);
     const lo = sp.title.left - CFG.laneReuseGap, hi = sp.hi + CFG.laneReuseGap;
-    const floor = (laneOf.get(parentB.get(bid)) ?? 0) + 1;
-    let row = floor;
-    while ((placed[row] || []).some(([a,b]) => lo < b && hi > a)) row++;
-    (placed[row] = placed[row] || []).push([lo, hi]);
+    const par = laneOf.get(parentB.get(bid)) ?? 0;
+    let side, level;
+    if (par === 0){
+      // straight off the trunk: free to take either side, so take whichever
+      // gets it closest to the trunk, and break ties towards the emptier side
+      const offer = S.branchSide === 'above' ? [-1] : S.branchSide === 'below' ? [1] : [-1, 1];
+      let best = null;
+      for (const sd of offer){
+        const L = seek(sd, 1, lo, hi);
+        if (!best || L < best.L || (L === best.L && load[sd] < load[best.sd])) best = {sd, L};
+      }
+      ({sd: side, L: level} = best);
+    } else {
+      side  = Math.sign(par);
+      level = seek(side, Math.abs(par) + 1, lo, hi);
+    }
+    load[side]++;
+    const row = side * level;
+    if (!placed.has(row)) placed.set(row, []);
+    placed.get(row).push([lo, hi]);
     laneOf.set(bid, row);
   }
+
+  const rows = [...new Set(laneOf.values())].sort((a,b) => a - b);
+  const laneNodes = new Map(rows.map(i => [i, []]));
+  S.nodes.forEach(n => laneNodes.get(laneOf.get(n.branch)).push(n));
+  for (const l of laneNodes.values()) l.sort((a,b) => a.x - b.x);
+
+  // which nodes hang off which, used below to see where a node's edges leave
   const kidsOf = new Map(S.nodes.map(n => [n.id, []]));
   for (const n of S.nodes) for (const p of n.parents) if (kidsOf.has(p)) kidsOf.get(p).push(n);
 
-  const laneCount = Math.max(...laneOf.values()) + 1;
-  const laneNodes = [...Array(laneCount)].map(() => []);
-  S.nodes.forEach(n => laneNodes[laneOf.get(n.branch)].push(n));
-  laneNodes.forEach(l => l.sort((a,b) => a.x - b.x));
-
   // --- labels: wrap, pick a side, then pack into collision tiers on that side
   const showLabel = n => S.allLabels || (n.tags||[]).includes('milestone') || n.status !== 'done';
-  const above = [], below = [];
-  laneNodes.forEach((list, i) => {
+  const above = new Map(), below = new Map();
+  laneNodes.forEach((list, row) => {
     let maxA = 1, maxB = 1;
     for (const n of list){
       n.label = null;
@@ -160,18 +184,19 @@ export function layout(){
         ?  (CFG.nodePadBelow + k * stepB)
         : -(CFG.nodePad + k * stepA);
     }
-    above[i] = tiers.above.length ? tiers.above.length * stepA + CFG.nodePad : CFG.laneClear;
-    below[i] = tiers.below.length ? tiers.below.length * stepB + CFG.nodePadBelow : CFG.laneClear;
+    above.set(row, tiers.above.length ? tiers.above.length * stepA + CFG.nodePad : CFG.laneClear);
+    below.set(row, tiers.below.length ? tiers.below.length * stepB + CFG.nodePadBelow : CFG.laneClear);
   });
 
   // --- lane y: each gap carries the labels hanging below the row above it
-  const laneYIdx = [];
+  const laneYIdx = new Map();
   let y = CFG.padTop;
-  for (let i = 0; i < laneCount; i++){
-    y = i === 0 ? y + above[i] : y + Math.max(CFG.laneGapMin, below[i-1] + above[i]);
-    laneYIdx[i] = y;
-  }
-  const laneY = new Map([...laneOf].map(([b,i]) => [b, laneYIdx[i]]));
+  rows.forEach((row, i) => {
+    y = i === 0 ? y + above.get(row)
+                : y + Math.max(CFG.laneGapMin, below.get(rows[i-1]) + above.get(row));
+    laneYIdx.set(row, y);
+  });
+  const laneY = new Map([...laneOf].map(([b,row]) => [b, laneYIdx.get(row)]));
   S.nodes.forEach(n => n.y = laneY.get(n.branch));
 
   // --- shift so the leftmost branch title stays on canvas
@@ -215,8 +240,10 @@ export function layout(){
   }
 
   const width  = Math.max(...S.nodes.map(n => n.label ? n.label.right + 20 : n.x + 40)) + 40;
-  const height = laneYIdx[laneCount-1] + below[laneCount-1] + 30;
-  return {byBranch, edges, laneOf, laneY, spans, span, months, nowX, t0, width, height, laneCount};
+  const last = rows[rows.length-1];
+  const height = laneYIdx.get(last) + below.get(last) + 30;
+  return {byBranch, edges, laneOf, laneY, spans, span, months, nowX, t0, width, height,
+          rows, laneCount: rows.length};
 }
 
 /** how far a fork/merge curve runs horizontally before it turns — capped, so long

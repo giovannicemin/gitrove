@@ -3,4 +3,4 @@
 
 export const S = { data:null, nodes:[], byId:new Map(), branches:new Map(), tree:new Map(), order:[],
             layout:null, k:1, tx:0, ty:0, sel:null, hover:null, allLabels:true, collapsed:new Set(),
-            labelMode:'auto', timeMode:'date', theme:'dark' };
+            labelMode:'auto', timeMode:'date', branchSide:'below', theme:'dark' };

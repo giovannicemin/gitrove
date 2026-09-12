@@ -26,6 +26,9 @@
           <div class="grp"><span>time spacing</span>
             <div class="seg" id="timemode">
               <button data-v="date" class="on">by date</button><button data-v="even">even</button></div></div>
+          <div class="grp"><span>branches</span>
+            <div class="seg" id="branchside">
+              <button data-v="below" class="on">below</button><button data-v="above">above</button><button data-v="both">both sides</button></div></div>
           <div class="grp"><span>label placement</span>
             <div class="seg" id="labelmode">
               <button data-v="auto" class="on">auto</button><button data-v="above">above</button><button data-v="below">below</button></div></div>
@@ -36,11 +39,17 @@
         <button id="zout">−</button><button id="zin">+</button>
         <button id="home">today</button><button id="fit">fit</button>
         <span class="sep"></span>
-        <button class="th" id="thlight" title="Light"><svg viewBox="0 0 24 24" width="14" height="14" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/>
-          <path d="M12 1.8v2.4M12 19.8v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg></button>
-        <button class="th" id="thdark" title="Dark"><svg viewBox="0 0 24 24" width="14" height="14" fill="none"
-          stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.5 14.8A8.8 8.8 0 019.2 3.5a8.8 8.8 0 1011.3 11.3z"/></svg></button>
+        <button id="theme" class="switch" role="switch" title="Light / dark">
+          <span class="knob">
+            <svg class="ico sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round">
+              <circle cx="12" cy="12" r="4.4"/>
+              <path d="M12 1.6v2.6M12 19.8v2.6M4.2 4.2l1.9 1.9M17.9 17.9l1.9 1.9M1.6 12h2.6M19.8 12h2.6M4.2 19.8l1.9-1.9M17.9 6.1l1.9-1.9"/>
+            </svg>
+            <svg class="ico moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round">
+              <path d="M20.5 14.8A8.8 8.8 0 019.2 3.5a8.8 8.8 0 1011.3 11.3z"/>
+            </svg>
+          </span>
+        </button>
       </div>
       <div id="detail"><button class="close" id="dclose">×</button><div id="dbody"></div></div>
       <div id="tip"></div>

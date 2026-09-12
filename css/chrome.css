@@ -44,8 +44,17 @@ main{display:grid;grid-template-columns:258px 1fr;min-height:0}
   .seg button:hover{color:var(--fg)}
   .seg button.on{background:var(--accent);color:var(--bg);font-weight:600}
   .controls .sep{width:1px;background:var(--line);margin:2px 3px}
-  .controls button.th{padding:0 8px;display:flex;align-items:center;justify-content:center}
-  .controls button.th.on{color:var(--accent);border-color:var(--accent)}
+  /* theme switch: the knob carries the icon for the mode you are IN */
+  .controls button.switch{width:54px;padding:0;position:relative;border-radius:15px;cursor:pointer}
+  .switch .knob{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+                background:var(--accent);display:grid;place-items:center;color:var(--bg);
+                transition:left .28s cubic-bezier(.5,.05,.3,1.3),background .2s}
+  body.light .switch .knob{left:27px}
+  .switch .ico{width:13px;height:13px;position:absolute;transition:opacity .18s,transform .28s}
+  .switch .sun {opacity:0;transform:rotate(-90deg)}
+  .switch .moon{opacity:1;transform:rotate(0)}
+  body.light .switch .sun {opacity:1;transform:rotate(0)}
+  body.light .switch .moon{opacity:0;transform:rotate(90deg)}
 
 #detail{position:absolute;right:0;top:0;height:100%;width:340px;background:var(--panel);border-left:1px solid var(--line);
           transform:translateX(101%);transition:transform .22s cubic-bezier(.4,0,.2,1);padding:20px;overflow-y:auto}

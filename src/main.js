@@ -43,18 +43,17 @@ function segment(id, apply){
   });
 }
 segment('timemode',  v => { S.timeMode  = v; relayout(); });
-segment('labelmode', v => { S.labelMode = v; relayout(); });
+segment('labelmode',  v => { S.labelMode  = v; relayout(); });
+segment('branchside', v => { S.branchSide = v; relayout(); });
 
 function setTheme(t){
   S.theme = t;
   document.body.classList.toggle('light', t === 'light');
-  $('#thlight').classList.toggle('on', t === 'light');
-  $('#thdark').classList.toggle('on', t !== 'light');
+  $('#theme').setAttribute('aria-checked', t === 'light');
   try { localStorage.setItem('gitrove.theme', t); } catch(e){}
   if (S.layout){ paintSidebar(); render(); if (S.sel) select(S.sel); }
 }
-$('#thlight').onclick = () => setTheme('light');
-$('#thdark').onclick  = () => setTheme('dark');
+$('#theme').onclick = () => setTheme(S.theme === 'light' ? 'dark' : 'light');
 
 // dev handle: the whole app state, for poking at from the console
 window.gitrove = { S, layout, render, relayout, select };
