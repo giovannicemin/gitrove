@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gitrove</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/chrome.css">
+<link rel="stylesheet" href="css/graph.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand"><b>gitrove</b><span>v0.2</span></div>
+    <div class="title"><strong id="pname">—</strong><em id="psub"></em></div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <main>
+    <aside><div class="side-h">Branches</div><div id="blist"></div></aside>
+    <div class="canvas-wrap">
+      <svg id="svg"><g id="vp"></g></svg>
+      <div id="settings" class="open">
+        <div class="head" id="shead">&#9881; settings <span class="caret">&#9656;</span></div>
+        <div class="body">
+          <label class="chk"><input type="checkbox" id="alllabels" checked> label every node</label>
+          <div class="grp"><span>time spacing</span>
+            <div class="seg" id="timemode">
+              <button data-v="date" class="on">by date</button><button data-v="even">even</button></div></div>
+          <div class="grp"><span>label placement</span>
+            <div class="seg" id="labelmode">
+              <button data-v="auto" class="on">auto</button><button data-v="above">above</button><button data-v="below">below</button></div></div>
+        </div>
+      </div>
+      <div class="hint">drag to pan · scroll to zoom · click a node</div>
+      <div class="controls">
+        <button id="zout">−</button><button id="zin">+</button>
+        <button id="home">today</button><button id="fit">fit</button>
+        <span class="sep"></span>
+        <button class="th" id="thlight" title="Light"><svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 1.8v2.4M12 19.8v2.4M4.4 4.4l1.7 1.7M17.9 17.9l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.4 19.6l1.7-1.7M17.9 6.1l1.7-1.7"/></svg></button>
+        <button class="th" id="thdark" title="Dark"><svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20.5 14.8A8.8 8.8 0 019.2 3.5a8.8 8.8 0 1011.3 11.3z"/></svg></button>
+      </div>
+      <div id="detail"><button class="close" id="dclose">×</button><div id="dbody"></div></div>
+      <div id="tip"></div>
+    </div>
+  </main>
+</div>
+<div id="err" hidden></div>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+/* The SVG itself: lanes, edges, nodes, labels. */
+
+.lane-band{opacity:var(--band)}
+  .branch-name{font-size:12px;font-weight:600}
+  .grid-line{stroke:var(--grid);stroke-width:1}
+  .grid-label{fill:var(--grid-fg);font-size:10px;letter-spacing:.07em;text-transform:uppercase}
+  .now-line{stroke:var(--accent);stroke-width:1;stroke-dasharray:3 4;opacity:.5}
+  .now-label{fill:var(--accent);font-size:10px;letter-spacing:.08em;opacity:.75}
+  .edge{fill:none;stroke-width:2.25;stroke-linecap:round}
+  .edge.ghost{stroke-dasharray:2 6;opacity:.35}
+  .dead-end{fill:none;stroke-width:2.4;stroke-linecap:round;opacity:.6}
+  .leader{stroke-width:1;opacity:.3}
+  .node{cursor:pointer}
+  .node circle.core{stroke:var(--bg);stroke-width:2.5}
+  .node circle.mile-core{fill:var(--bg)}
+  .node.planned circle.core{fill:var(--bg)!important;stroke-dasharray:2.5 3;stroke-width:1.8}
+  .node.current circle.ring{fill:none;stroke-width:2;opacity:.5}
+  .node .halo{fill:none;stroke-width:0}
+  .node.sel .halo{stroke-width:2.5;opacity:.9}
+  .node:hover circle.core{stroke:#fff}
+  /* halo: edges crossing a lane gap pass BEHIND the text instead of through it */
+  .lbl,.branch-name{paint-order:stroke;stroke:var(--bg);stroke-width:3.6px;stroke-linejoin:round}
+  .lbl{font-size:11px;fill:var(--lbl-fg);pointer-events:none}
+  .lbl.milestone{fill:var(--fg);font-weight:600}
+  .lbl.ghost{opacity:.5}
+  .faded{opacity:.13}

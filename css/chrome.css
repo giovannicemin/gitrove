@@ -1,0 +1,69 @@
+/* Sidebar, settings card, canvas controls, detail panel, tooltip. */
+
+main{display:grid;grid-template-columns:258px 1fr;min-height:0}
+  aside{border-right:1px solid var(--line);background:var(--bg-soft);overflow-y:auto;padding:14px 0 24px}
+  .side-h{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--fg-faint);padding:0 16px 9px}
+  .brow{display:flex;align-items:center;gap:7px;padding:6px 14px 6px 0;cursor:pointer;position:relative}
+  .brow:hover{background:#1c2130}
+  .brow.dim{opacity:.35}
+  .brow.sel{background:#1f2534}
+  .twist{width:14px;flex:none;text-align:center;font-size:9px;color:var(--fg-faint);transition:transform .15s;user-select:none}
+  .twist.open{transform:rotate(90deg)}
+  .twist.leaf{opacity:0;pointer-events:none}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .brow .nm{flex:1;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .brow .ct{font-size:11px;color:var(--fg-faint);font-variant-numeric:tabular-nums}
+  .brow .st{font-size:8.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--fg-faint);border:1px solid var(--line);border-radius:4px;padding:1px 4px}
+  .guide{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+
+  .canvas-wrap{position:relative;min-width:0;overflow:hidden}
+  svg{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+  svg.grabbing{cursor:grabbing}
+  .controls{position:absolute;right:14px;bottom:14px;display:flex;gap:6px}
+  .controls button{height:30px;min-width:30px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--fg-dim);font-size:14px;cursor:pointer;line-height:1;padding:0 9px}
+  .controls button:hover{color:var(--fg);border-color:#38405a}
+  .hint{position:absolute;left:14px;bottom:14px;font-size:11px;color:var(--fg-faint)}
+  /* settings card */
+  #settings{position:absolute;left:14px;top:12px;background:var(--panel);border:1px solid var(--line);
+            border-radius:9px;font-size:11px;color:var(--fg-dim);user-select:none;min-width:186px;
+            box-shadow:0 6px 20px #0000002e}
+  #settings .head{display:flex;align-items:center;gap:7px;padding:8px 11px;cursor:pointer;font-size:10px;
+                  letter-spacing:.09em;text-transform:uppercase;color:var(--fg-faint)}
+  #settings .head .caret{margin-left:auto;font-size:9px;transition:transform .15s}
+  #settings.open .head .caret{transform:rotate(90deg)}
+  #settings .body{display:none;padding:3px 11px 11px;flex-direction:column;gap:10px}
+  #settings.open .body{display:flex}
+  #settings label.chk{display:flex;align-items:center;gap:7px;cursor:pointer}
+  #settings label.chk input{accent-color:var(--accent)}
+  #settings .grp{display:flex;flex-direction:column;gap:5px}
+  #settings .grp>span{color:var(--fg-faint);font-size:10px;letter-spacing:.05em}
+  .seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .seg button{flex:1;background:none;border:0;border-right:1px solid var(--line);color:var(--fg-faint);
+              font:inherit;font-size:10.5px;padding:4px 5px;cursor:pointer;white-space:nowrap}
+  .seg button:last-child{border-right:0}
+  .seg button:hover{color:var(--fg)}
+  .seg button.on{background:var(--accent);color:var(--bg);font-weight:600}
+  .controls .sep{width:1px;background:var(--line);margin:2px 3px}
+  .controls button.th{padding:0 8px;display:flex;align-items:center;justify-content:center}
+  .controls button.th.on{color:var(--accent);border-color:var(--accent)}
+
+#detail{position:absolute;right:0;top:0;height:100%;width:340px;background:var(--panel);border-left:1px solid var(--line);
+          transform:translateX(101%);transition:transform .22s cubic-bezier(.4,0,.2,1);padding:20px;overflow-y:auto}
+  #detail.open{transform:none}
+  #detail .close{position:absolute;right:13px;top:11px;background:none;border:0;color:var(--fg-faint);font-size:19px;cursor:pointer}
+  #detail .crumb{font-size:11px;color:var(--fg-faint);margin-bottom:12px;line-height:1.7}
+  #detail .crumb b{font-weight:500}
+  #detail h2{font-size:17px;line-height:1.4;margin:0 0 10px;font-weight:600}
+  #detail .desc{font-size:13px;line-height:1.65;color:var(--fg-dim);margin:14px 0 4px}
+  #detail .meta{font-size:12px;color:var(--fg-dim);display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line);padding-top:14px;margin-top:16px}
+  #detail .meta div{display:flex;justify-content:space-between;gap:12px}
+  #detail .meta b{font-weight:500;color:var(--fg)}
+  .badge{display:inline-block;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:4px;padding:2px 6px;border:1px solid var(--line);color:var(--fg-dim);margin-right:4px}
+
+  #tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 11px;
+       font-size:12px;max-width:270px;box-shadow:0 10px 30px #0009;opacity:0;transition:opacity .12s;z-index:5;line-height:1.45}
+  #tip .h{font-weight:600}
+  #tip .d{font-size:11px;color:var(--fg-dim);margin-top:5px}
+  #tip .m{font-size:10px;color:var(--fg-faint);margin-top:6px;letter-spacing:.04em}
+  #err{padding:40px;max-width:560px;line-height:1.7;color:var(--fg-dim)}
+  code{font-family:var(--mono);background:#000;padding:2px 6px;border-radius:4px;color:var(--accent);font-size:12.5px}

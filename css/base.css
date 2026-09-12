@@ -1,0 +1,33 @@
+/* Palette, both themes, page shell and the top bar. */
+
+:root{
+    --bg:#0f1117; --bg-soft:#151823; --panel:#171b26; --line:#242a38;
+    --fg:#e6e9f0; --fg-dim:#98a0b3; --fg-faint:#5c6478;
+    --accent:#e8c37a;
+    --grid:#1c2130; --grid-fg:#474f63; --lbl-fg:#939bad; --band:.055;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  body.light{
+    --bg:#faf9f6; --bg-soft:#f2f0ea; --panel:#fff; --line:#e4dfd5;
+    --fg:#1b2030; --fg-dim:#5a6173; --fg-faint:#949aa8;
+    --accent:#a87a1c;
+    --grid:#ebe6dc; --grid-fg:#a29a8b; --lbl-fg:#6b7285; --band:.13;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:14px;overflow:hidden;-webkit-font-smoothing:antialiased}
+  #app{display:grid;grid-template-rows:auto 1fr;height:100%}
+
+  header{display:flex;align-items:center;gap:22px;padding:13px 20px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
+  .brand{display:flex;align-items:baseline;gap:9px}
+  .brand b{font-size:15px;letter-spacing:.14em;color:var(--accent);font-weight:600}
+  .brand span{font-size:11px;color:var(--fg-faint)}
+  .title{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .title strong{font-size:15px;font-weight:600}
+  .title em{font-style:normal;font-size:12px;color:var(--fg-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stats{display:flex;gap:8px;margin-left:auto}
+  .chip{display:flex;flex-direction:column;align-items:center;padding:5px 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+  .chip b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
+  .chip span{font-size:9.5px;color:var(--fg-faint);text-transform:uppercase;letter-spacing:.08em}
+  .chip.hl b{color:var(--accent)}
