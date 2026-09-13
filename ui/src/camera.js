@@ -27,22 +27,43 @@ function interacting(on){
   }
 }
 
+/* Pointer capture rather than window-level mouse listeners: the browser then
+   guarantees the move and up events come back to us even when the pointer
+   leaves the window, which is what used to leave the cursor stuck mid-grab. */
+
 let drag = null;
-svg.addEventListener('mousedown', e => {
-  drag = {x:e.clientX, y:e.clientY, tx:S.tx, ty:S.ty};
+
+function endDrag(){
+  if (!drag) return;
+  const id = drag.id;
+  drag = null;                                   // before release, so the
+  try { svg.releasePointerCapture(id); } catch {} // lostpointercapture no-ops
+  svg.classList.remove('grabbing');
+  interacting(false);
+}
+
+svg.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  drag = {id: e.pointerId, x: e.clientX, y: e.clientY, tx: S.tx, ty: S.ty};
+  try { svg.setPointerCapture(e.pointerId); } catch {}
   svg.classList.add('grabbing');
   interacting(true);
 });
-addEventListener('mousemove', e => {
-  if (!drag) return;
+
+svg.addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (!(e.buttons & 1)) return endDrag();        // released somewhere we never heard about
   S.tx = drag.tx + (e.clientX - drag.x);
   S.ty = drag.ty + (e.clientY - drag.y);
   scheduleTransform();
 });
-addEventListener('mouseup', () => {
-  if (!drag) return;
-  drag = null; svg.classList.remove('grabbing'); interacting(false);
-});
+
+for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture'])
+  svg.addEventListener(ev, e => { if (!drag || e.pointerId === drag.id) endDrag(); });
+
+addEventListener('blur', endDrag);               // alt-tab away mid-drag
+document.addEventListener('visibilitychange', () => { if (document.hidden) endDrag(); });
+
 svg.addEventListener('wheel', e => {
   e.preventDefault();
   const r = svg.getBoundingClientRect();

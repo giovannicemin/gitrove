@@ -136,12 +136,20 @@ The sidebar is the opposite view: a depth-first tree with collapsible subtrees, 
 of which row a branch ended up on.
 
 **Panning** repaints every vector on screen, so two things matter: it happens at most once
-per frame (many mousemoves coalesce into one `requestAnimationFrame`), and each repaint is
-made cheaper while the mouse is down — antialiasing off, hit-testing off, and the label
-halos off, since those paint every label twice. Full fidelity returns on release. If it is
-still not smooth on a large project, the next dial is `.panning .lbl{display:none}` in
-`ui/css/graph.css`; after that the real answer is compositing the graph as a layer rather
-than repainting it.
+per frame (many pointermoves coalesce into one `requestAnimationFrame`), and each repaint is
+made much cheaper while the mouse is down. Antialiasing off, hit-testing off, halos off, and
+all labels hidden except the milestones, which stay as landmarks so you can still tell where
+you are — 498 elements down to 332, and 135 texts down to 40 of which none are painted
+twice. Full fidelity returns on release.
+
+The drag uses pointer capture rather than window-level mouse listeners, so releasing the
+button outside the window still ends the drag, and the graph is `user-select: none` — it is
+something you drag, not text you select. Selecting across 136 text elements mid-drag made
+the browser paint a selection highlight on every one of them.
+
+If it is still not smooth on a much larger project, the remaining answer is compositing the
+graph as a layer — CSS transforms with `transform-box: view-box` — so the GPU moves a
+texture instead of the renderer repainting vectors.
 
 **Labels** are wrapped at `CFG.wrapChars` and packed into collision tiers, with a leader
 line down to the node when they are not on the first tier. Lane heights are derived from
