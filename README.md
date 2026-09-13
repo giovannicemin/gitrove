@@ -26,7 +26,7 @@ No build step and no dependencies — plain ES modules, served as files.
     src/animate.js      springs the drawing from one layout to the next
     src/app.js          a setting changed: recompute, then redraw
     src/main.js         entry point and control wiring
-    data/thesis.json    the project file
+    data/example_thesis.json   a sample project — swap in your own
 
 The dependency direction is one-way: `layout` never imports `render`, `render` never
 computes a position. `window.gitrove` exposes `{S, layout, render, relayout, select}` for

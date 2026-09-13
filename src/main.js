@@ -9,16 +9,21 @@ import { render } from './render.js';
 import { home } from './camera.js';
 import { relayout } from './app.js';
 
+/* The one place that knows where a project comes from. Everything downstream
+   takes a parsed object, so another source — a file picker, a drop, a desktop
+   shell — only has to replace this. */
+const PROJECT = 'data/example_thesis.json';
+
 async function boot(){
   let data;
   try{
-    const res = await fetch('data/thesis.json', {cache:'no-store'});
+    const res = await fetch(PROJECT, {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP ' + res.status);
     data = await res.json();
   }catch(e){
     $('#app').hidden = true;
     const err = $('#err'); err.hidden = false;
-    err.innerHTML = '<h2 style="color:#e6e9f0">Could not load <code>data/thesis.json</code></h2>' +
+    err.innerHTML = '<h2 style="color:var(--fg)">Could not load <code>' + PROJECT + '</code></h2>' +
       '<p>Serve the folder over HTTP instead of opening the file directly:</p>' +
       '<p><code>python3 -m http.server 5173</code></p><p style="color:#5c6478;font-size:12px">(' + e + ')</p>';
     return;
