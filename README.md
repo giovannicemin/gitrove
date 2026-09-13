@@ -81,11 +81,21 @@ CLOSED: [2025-11-20 Thu]
 | `:FROM:` | the entry this branch grew out of — this is what makes a sub-branch |
 | `:MERGES:` | this entry folds that branch back in |
 | `:milestone:` | larger ringed node, label always visible |
+| `:ID:` | how anything else refers to this entry |
 | `:COLOR:` | optional override; see below |
 
-**Most entries need no `:ID:`.** Only ones something points at do — fork points and
-branches. In the sample that is 8 entries out of 63; the rest are a heading, a date and a
-paragraph. The app assigns an id only when you create a reference to something.
+**Every entry carries an `:ID:`**, of the form `<branch>-<n>`, so you can fork a branch off
+any of them without stopping to invent one. `:FROM: ch3-2` also says where it points without
+you having to go and look. New entries get one the moment the app creates them; to add them
+to a file that predates this, run
+
+    node scripts/add-ids.mjs path/to/project.org --dry
+
+Drop `--dry` to write. It renumbers consistently, remaps every existing reference, and
+refuses to write at all if the document would end up meaning something different.
+
+The drawers make the file longer — the sample went from 299 lines to 454 — but org folds
+them away, so what you read while editing is unchanged.
 
 **Colours are not in the file.** Top-level branches take successive palette entries; a
 sub-branch takes its parent's hue, shifted and darkened a little, so a family stays
@@ -102,9 +112,9 @@ parser did not model lies outside every patch, so it survives by construction ra
 being carefully re-emitted: `:LOGBOOK:` drawers, `#+begin_src` blocks, links, lists, tables,
 your comments and your blank lines.
 
-    node test/orgedit.test.mjs
+    npm test
 
-28 checks, and the ones that matter are: applying no edits returns the file byte for byte;
+35 checks, and the ones that matter are: applying no edits returns the file byte for byte;
 retitling an entry changes exactly one line; and an entry carrying a logbook drawer, a source
 block and a list keeps all three when its description is rewritten.
 

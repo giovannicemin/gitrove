@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
-    "serve": "python3 -m http.server 5173 --directory ui",
+    "serve": "sh scripts/serve.sh",
     "test": "node test/orgedit.test.mjs"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2"
-  }
+  },
+  "type": "module"
 }

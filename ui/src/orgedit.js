@@ -50,9 +50,14 @@ export function setStatus(entry, status, date){
   return [...setHeading(entry, {status}), ...setPlanning(entry, kind, date ?? entry.date)];
 }
 
-/** set a property, or remove it with value null; creates and deletes the drawer */
+const propLine = (key, value) =>
+  `:${key}:${' '.repeat(Math.max(1, 9 - key.length))}${value}`;
+
+/** set a property, or remove it with value null; creates and deletes the drawer.
+ *  An existing key keeps its place in the drawer — editing a value should not
+ *  shuffle the lines around it. */
 export function setProp(entry, key, value){
-  const K = key.toUpperCase(), line = `:${K}:${' '.repeat(Math.max(1, 9 - K.length))}${value}`;
+  const K = key.toUpperCase(), line = propLine(K, value);
   if (!entry.drawer){
     if (value == null) return [];
     const at = entry.plan !== null ? entry.plan + 1 : entry.head + 1;
@@ -60,12 +65,28 @@ export function setProp(entry, key, value){
   }
   const { start, end } = entry.drawer;
   const kept = [];
+  let replaced = false;
   for (let i = start + 1; i < end - 1; i++){
     const m = entry.source[i].match(/^\s*:([A-Za-z_]+):/);
-    if (!m || m[1].toUpperCase() !== K) kept.push(entry.source[i]);
+    if (m && m[1].toUpperCase() === K){
+      if (value != null){ kept.push(line); replaced = true; }
+    } else kept.push(entry.source[i]);
   }
-  if (value != null) kept.push(line);
+  // a new :ID: leads the drawer, as org itself writes them; anything else appends
+  if (value != null && !replaced) K === 'ID' ? kept.unshift(line) : kept.push(line);
   return [{start, end, lines: kept.length ? [':PROPERTIES:', ...kept, ':END:'] : []}];
+}
+
+/** the next free id on a branch: lit-1, lit-2, ... Never reuses a number, so
+ *  deleting an entry cannot make a later one collide with a stale reference. */
+export function nextId(nodes, branchId){
+  const re = new RegExp('^' + branchId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '-(\\d+)$');
+  let n = 0;
+  for (const x of nodes){
+    const m = String(x.id || '').match(re);
+    if (m) n = Math.max(n, +m[1]);
+  }
+  return `${branchId}-${n + 1}`;
 }
 
 /** replace the leading prose, leaving any list, table or block below it alone */
@@ -74,12 +95,15 @@ export function setDesc(entry, text){
   return [{start: entry.desc.start, end: entry.desc.end, lines: body ? [body] : []}];
 }
 
-/** a whole new entry under a branch, after `after` (or as its first) */
-export function insertNode(branch, after, {title, status = 'planned', date, desc, tags}){
+/** a whole new entry under a branch, after `after` (or as its first).
+ *  Always carries an :ID:, so it can be forked from or merged the moment it
+ *  exists rather than after you go and add one by hand. */
+export function insertNode(branch, after, {id, title, status = 'planned', date, desc, tags}){
   const at = after ? after.end : (branch.drawer ? branch.drawer.end : branch.head + 1);
   const lines = [headingLine(2, KW_NODE[status], title, tags)];
   const kind = PLAN_KIND[status];
   if (kind && date) lines.push(`${kind}: ${stamp(date, kind !== 'CLOSED')}`);
+  if (id) lines.push(':PROPERTIES:', propLine('ID', id), ':END:');
   if (desc) lines.push(desc.trim());
   return [{start: at, end: at, lines}];
 }

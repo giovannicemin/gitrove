@@ -78,32 +78,40 @@ console.log('\nstatus changes carry the timestamp with them');
 
 console.log('\nproperties');
 {
+  // every entry now carries an :ID:, so changing one replaces in place
   const doc = parse(SRC);
-  const out = E.apply(doc, E.setProp(node(doc,'Read the twelve core papers'), 'ID', 'l3'));
-  ok('a drawer was created', parse(out).nodes.find(n=>n.title==='Read the twelve core papers').id === 'l3');
-  ok('only the drawer was inserted', diffLines(SRC, out).length === 3);
+  const out = E.apply(doc, E.setProp(node(doc,'Read the twelve core papers'), 'ID', 'lit-99'));
+  ok('the id changed', parse(out).nodes.find(n=>n.title==='Read the twelve core papers').id === 'lit-99');
+  ok('only the one property line differs', diffLines(SRC, out).length === 2, diffLines(SRC,out).join('\n       '));
 
-  const doc2 = parse(out);
-  const back = E.apply(doc2, E.setProp(node(doc2,'Read the twelve core papers'), 'ID', null));
-  ok('removing the last property removes the drawer', back === SRC, diffLines(SRC, back).join('\n       '));
+  // and an entry with no drawer at all still gets one built
+  const bare = SRC.replace(':ID:       lit-3\n:END:\n', ':END:\n').replace(':PROPERTIES:\n:END:\n', '');
+  const d2 = parse(bare);
+  const made = E.apply(d2, E.setProp(node(d2,'Read the twelve core papers'), 'ID', 'lit-3'));
+  ok('a missing drawer is created', parse(made).nodes.find(n=>n.title==='Read the twelve core papers').id === 'lit-3');
+  ok('and that restores the original file', made === SRC, diffLines(SRC, made).join('\n       '));
 }
 {
   const doc = parse(SRC);
   const n = node(doc,'Related work folded into Chapter 1');       // already has :MERGES:
-  const out = E.apply(doc, E.setProp(n, 'ID', 'm4'));
+  const out = E.apply(doc, E.setProp(n, 'ID', 'main-4b'));
   const got = parse(out).nodes.find(x => x.title === 'Related work folded into Chapter 1');
-  ok('added alongside an existing property', got.id === 'm4' && got.merges[0] === 'lit');
+  ok('changed alongside an existing property', got.id === 'main-4b' && got.merges[0] === 'lit');
 }
 
 console.log('\ninserting and removing');
 {
   const doc = parse(SRC);
   const last = doc.nodes.filter(n => n.branch === 'ch4').pop().at;
+  const id = E.nextId(doc.nodes, 'ch4');
+  ok('the next free id follows the ones in the file', id === 'ch4-6');
   const out = E.apply(doc, E.insertNode(branch(doc,'ch4'), last,
-    {title:'Rework 4.3 as well', status:'done', date:'2026-09-12', desc:'Same problem as 4.2.'}));
+    {id, title:'Rework 4.3 as well', status:'done', date:'2026-09-12', desc:'Same problem as 4.2.'}));
   const got = parse(out);
-  ok('the entry landed on the right branch', got.nodes.filter(n=>n.branch==='ch4').pop().title === 'Rework 4.3 as well');
-  ok('three lines added, nothing removed', diffLines(SRC,out).every(l=>l.startsWith('+')) && diffLines(SRC,out).length===3);
+  const made = got.nodes.filter(n=>n.branch==='ch4').pop();
+  ok('the entry landed on the right branch', made.title === 'Rework 4.3 as well');
+  ok('a new entry can be referred to immediately', made.id === 'ch4-6' && !made.generatedId);
+  ok('only additions, nothing removed', diffLines(SRC,out).every(l=>l.startsWith('+')) && diffLines(SRC,out).length===6);
   ok('node count went up by one', got.nodes.length === doc.nodes.length + 1);
 
   const doc2 = parse(out);
@@ -147,6 +155,16 @@ Ran overnight. See [[file:notes/cluster.org][the cluster notes]].
      ['#+begin_src sh','sbatch --array=1-240 run.sh',':LOGBOOK:','- 240 jobs'].every(s => out2.includes(s)));
   ok('and the old prose is gone', !out2.includes('See [[file:notes/cluster.org]'));
   ok('only the prose line differs', diffLines(foreign, out2).length === 2, diffLines(foreign,out2).join('\n       '));
+}
+
+console.log('\nevery entry is addressable');
+{
+  const doc = parse(SRC);
+  ok('no entry relies on a generated id', doc.nodes.every(n => !n.generatedId));
+  ok('every id is unique', new Set(doc.nodes.map(n=>n.id)).size === doc.nodes.length);
+  ok('every :FROM: resolves to a real entry',
+     doc.branches.filter(b=>b.from).every(b => doc.nodes.some(n => n.id === b.from)));
+  ok('ids say which branch they are on', doc.nodes.every(n => n.id.startsWith(n.branch + '-')));
 }
 
 console.log('\noverlapping edits are refused');

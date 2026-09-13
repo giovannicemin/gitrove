@@ -13,286 +13,441 @@
 :END:
 ** DONE Kick-off meeting with advisor                             :milestone:
 CLOSED: [2025-10-06 Mon]
+:PROPERTIES:
+:ID:       main-1
+:END:
 Agreed on the topic and a rough twelve-month plan. Left the office genuinely excited, which lasted about a week.
 ** DONE Thesis repo and LaTeX template set up
 CLOSED: [2025-10-09 Thu]
+:PROPERTIES:
+:ID:       main-2
+:END:
 One repo for text, code and figures. Compiles to an empty 3-page PDF, and that already felt like progress.
 ** DONE Outline agreed: five chapters                             :milestone:
 CLOSED: [2025-10-15 Wed]
 :PROPERTIES:
-:ID:       m3
+:ID:       main-3
 :END:
 Intro, methods, results, discussion, conclusions. The shape of the whole thing in one page.
 ** DONE Related work folded into Chapter 1
 CLOSED: [2025-11-20 Thu]
 :PROPERTIES:
+:ID:       main-4
 :MERGES:   lit
 :END:
 Four pages of the literature review became section 1.2, with the gap statement as its closing paragraph.
 ** DONE Chapter 1 — Introduction, first draft                     :milestone:
 CLOSED: [2025-12-02 Tue]
 :PROPERTIES:
-:ID:       m5
+:ID:       main-5
 :END:
 Eleven pages. Rough, but the argument runs from start to finish without a hole in it.
 ** DONE Pipeline results pulled into the text
 CLOSED: [2026-01-15 Thu]
 :PROPERTIES:
+:ID:       main-6
 :MERGES:   pipeline
 :END:
 The numbers in the thesis are now produced by one command instead of six notebooks in the right order.
 ** DONE Chapter 2 accepted by advisor                             :milestone:
 CLOSED: [2026-02-20 Fri]
 :PROPERTIES:
-:ID:       m7
+:ID:       main-7
 :MERGES:   ch2
 :END:
 First chapter to come back with no structural comments. Only typos and one complaint about notation.
 ** DONE Final figure style applied everywhere
 CLOSED: [2026-03-18 Wed]
 :PROPERTIES:
+:ID:       main-8
 :MERGES:   plots
 :END:
 Every figure in the thesis now shares one palette, one font size and one export path.
 ** DONE Chapter 3 signed off                                      :milestone:
 CLOSED: [2026-05-12 Tue]
 :PROPERTIES:
+:ID:       main-9
 :MERGES:   ch3
 :END:
 The results chapter is done. This is the half of the thesis that actually contains new science.
 ** DONE Mid-thesis seminar talk                                   :milestone:
 CLOSED: [2026-05-20 Wed]
+:PROPERTIES:
+:ID:       main-10
+:END:
 Thirty minutes plus questions. Went fine. Two good suggestions about the error bars and one about the outlook.
 ** DONE Advisor feedback, round one
 CLOSED: [2026-06-10 Wed]
+:PROPERTIES:
+:ID:       main-11
+:END:
 Six pages of comments on chapters 1 to 3. Harsh on the introduction, generous everywhere else.
 ** DONE Consistent notation across all chapters
 CLOSED: [2026-07-01 Wed]
+:PROPERTIES:
+:ID:       main-12
+:END:
 One afternoon with a table of every symbol used. Found four collisions and one symbol defined twice.
 ** DONE Bibliography cleaned up
 CLOSED: [2026-07-20 Mon]
 :PROPERTIES:
-:ID:       m13
+:ID:       main-13
 :END:
 280 entries down to 214. Removed duplicates, fixed the arXiv-only references, normalised journal names.
 ** TODO Chapter 5 — Conclusions
+:PROPERTIES:
+:ID:       main-14
+:END:
 Short. Three pages that say what was found, what it changes, and what comes next.
 ** TODO Full read-through and proofread
+:PROPERTIES:
+:ID:       main-15
+:END:
 Printed, on paper, with a red pen and no computer nearby.
 ** TODO Send the complete draft to the advisor
+:PROPERTIES:
+:ID:       main-16
+:END:
 The last big handover before submission. Expect one more round of comments after it.
 ** TODO Submit                                                    :milestone:
+:PROPERTIES:
+:ID:       main-17
+:END:
 Upload, sign, hand in the printed copies. Then do not look at it again for a month.
 
 * MERGED Literature review
 :PROPERTIES:
 :ID:       lit
-:FROM:     m3
+:FROM:     main-3
 :END:
 ** DONE Search: reviews 2015 to 2025
 CLOSED: [2025-10-17 Fri]
+:PROPERTIES:
+:ID:       lit-1
+:END:
 Systematic pass over three databases. 180 hits, 40 worth opening, 12 worth reading properly.
 ** DONE Zotero library and tagging scheme
 CLOSED: [2025-10-22 Wed]
+:PROPERTIES:
+:ID:       lit-2
+:END:
 Tags by method, system and whether the paper actually reports a negative result.
 ** DONE Read the twelve core papers
 CLOSED: [2025-10-29 Wed]
+:PROPERTIES:
+:ID:       lit-3
+:END:
 One page of notes each, always answering the same three questions so they can be compared later.
 ** DONE Summary table of existing methods
 CLOSED: [2025-11-05 Wed]
+:PROPERTIES:
+:ID:       lit-4
+:END:
 Methods against assumptions. Two columns turned out to be empty, which is where the thesis lives.
 ** DONE Found the gap: nobody compares X under Y                  :milestone:
 CLOSED: [2025-11-12 Wed]
+:PROPERTIES:
+:ID:       lit-5
+:END:
 The sentence the whole thesis hangs on. Took five weeks of reading to be able to write one line.
 ** DONE Drafted four pages of related work
 CLOSED: [2025-11-18 Tue]
+:PROPERTIES:
+:ID:       lit-6
+:END:
 Written as an argument that ends at the gap, rather than as a list of what everyone did.
 
 * MERGED Analysis pipeline
 :PROPERTIES:
 :ID:       pipeline
-:FROM:     m3
+:FROM:     main-3
 :END:
 ** DONE Scaffold the package and environment
 CLOSED: [2025-10-20 Mon]
+:PROPERTIES:
+:ID:       pipeline-1
+:END:
 A pinned environment and an installable package, so results can be reproduced on the cluster.
 ** DONE Data loader for the raw dataset
 CLOSED: [2025-11-03 Mon]
+:PROPERTIES:
+:ID:       pipeline-2
+:END:
 Handles the three file formats the group has accumulated and validates shapes on the way in.
 ** DONE First simulation run that finishes
 CLOSED: [2025-11-24 Mon]
+:PROPERTIES:
+:ID:       pipeline-3
+:END:
 Ran overnight, produced plausible-looking output. Celebrated slightly too early, as it turned out.
 ** DONE It was wrong: off-by-one in the time index
 CLOSED: [2025-12-08 Mon]
+:PROPERTIES:
+:ID:       pipeline-4
+:END:
 Ten days lost. Every figure produced before this date is garbage. Now there is a regression test for it.
 ** DONE Unit tests for the core solver
 CLOSED: [2025-12-15 Mon]
 :PROPERTIES:
-:ID:       p5
+:ID:       pipeline-5
 :END:
 Analytic limits where the answer is known. Cheap insurance, bought exactly one week too late.
 ** DONE Batch runs on the cluster
 CLOSED: [2026-01-08 Thu]
+:PROPERTIES:
+:ID:       pipeline-6
+:END:
 240 jobs across the parameter sweep, about eleven hours of wall time and one failed node.
 ** DONE Results reproduce the reference paper                     :milestone:
 CLOSED: [2026-01-13 Tue]
+:PROPERTIES:
+:ID:       pipeline-7
+:END:
 Within error bars on all four benchmark points. The pipeline can now be trusted with new physics.
 
 * MERGED Plot toolkit
 :PROPERTIES:
 :ID:       plots
-:FROM:     p5
+:FROM:     pipeline-5
 :END:
 ** DONE Colour-blind-safe palette
 CLOSED: [2026-01-20 Tue]
+:PROPERTIES:
+:ID:       plots-1
+:END:
 Checked with a simulator for all three common types. Also survives being printed in greyscale.
 ** DONE Reusable matplotlib style file
 CLOSED: [2026-02-02 Mon]
+:PROPERTIES:
+:ID:       plots-2
+:END:
 Fonts, sizes and margins in one place, matched to the LaTeX body text so nothing is rescaled.
 ** DONE Figure 3: the phase diagram
 CLOSED: [2026-02-16 Mon]
+:PROPERTIES:
+:ID:       plots-3
+:END:
 The one figure people will remember from the thesis. Redrawn four times before it was legible.
 ** DONE Figure 5: convergence panel
 CLOSED: [2026-03-02 Mon]
+:PROPERTIES:
+:ID:       plots-4
+:END:
 Four panels sharing axes, showing the solver converges in every regime that is claimed.
 ** DONE Regenerated every figure at 600 dpi
 CLOSED: [2026-03-16 Mon]
+:PROPERTIES:
+:ID:       plots-5
+:END:
 One command rebuilds all seventeen figures from raw data. No more hand-edited PDFs.
 
 * CANCELLED Intro as a story
 :PROPERTIES:
 :ID:       narrative
-:FROM:     m5
+:FROM:     main-5
 :END:
 ** DONE Try rewriting the intro as a story
 CLOSED: [2025-12-20 Sat]
+:PROPERTIES:
+:ID:       narrative-1
+:END:
 Start from the puzzle rather than the field, and let the literature arrive when it is needed.
 ** DONE Dropped: advisor prefers the classic structure
 CLOSED: [2026-01-06 Tue]
+:PROPERTIES:
+:ID:       narrative-2
+:END:
 Not wasted. Two paragraphs survived and are now the best-written part of section 1.2.
 
 * MERGED Chapter 2 — Methods
 :PROPERTIES:
 :ID:       ch2
-:FROM:     m5
+:FROM:     main-5
 :END:
 ** DONE Outline of the methods chapter
 CLOSED: [2025-12-08 Mon]
+:PROPERTIES:
+:ID:       ch2-1
+:END:
 Model, approximations, numerical scheme, validation. In that order, each section earning the next.
 ** DONE Write the model section
 CLOSED: [2025-12-18 Thu]
+:PROPERTIES:
+:ID:       ch2-2
+:END:
 Every assumption stated explicitly, including the two that are usually left implicit in the field.
 ** DONE Derivation appendix
 CLOSED: [2026-01-12 Mon]
+:PROPERTIES:
+:ID:       ch2-3
+:END:
 Six pages of algebra moved out of the main text so the chapter stays readable.
 ** DONE Rewrote 2.3 after advisor comments
 CLOSED: [2026-01-28 Wed]
+:PROPERTIES:
+:ID:       ch2-4
+:END:
 The approximation was justified in the wrong order: consequences first, then the reason.
 ** DONE Added the pseudo-code box
 CLOSED: [2026-02-10 Tue]
+:PROPERTIES:
+:ID:       ch2-5
+:END:
 Half a page that replaced two pages of prose describing the same loop.
 ** DONE Proofread and fixed all references
 CLOSED: [2026-02-18 Wed]
+:PROPERTIES:
+:ID:       ch2-6
+:END:
 Every equation reference checked by hand after the great renumbering incident.
 
 * MERGED Chapter 3 — Results
 :PROPERTIES:
 :ID:       ch3
-:FROM:     m7
+:FROM:     main-7
 :END:
 ** DONE Decide which results make the cut
 CLOSED: [2026-02-24 Tue]
+:PROPERTIES:
+:ID:       ch3-1
+:END:
 Three of the seven result sets tell the story. The rest go to the appendix or nowhere.
 ** DONE Write results section 3.1
 CLOSED: [2026-03-06 Fri]
 :PROPERTIES:
-:ID:       r2
+:ID:       ch3-2
 :END:
 The main claim of the thesis, stated with its evidence in under four pages.
 ** DONE Section 3.2 drafted
 CLOSED: [2026-03-24 Tue]
+:PROPERTIES:
+:ID:       ch3-3
+:END:
 The parameter sweep. Harder to write than expected because the trend reverses twice.
 ** DONE Uncertainties folded into the chapter
 CLOSED: [2026-04-07 Tue]
 :PROPERTIES:
+:ID:       ch3-4
 :MERGES:   stats
 :END:
 Every number in Chapter 3 now carries an uncertainty that was computed rather than guessed.
 ** DONE Cut three pages that went nowhere
 CLOSED: [2026-04-21 Tue]
+:PROPERTIES:
+:ID:       ch3-5
+:END:
 A whole subsection deleted. Painful, and the chapter is clearly better without it.
 ** DONE Final pass on Chapter 3
 CLOSED: [2026-05-08 Fri]
 :PROPERTIES:
-:ID:       r6
+:ID:       ch3-6
 :END:
 Read aloud start to finish. Fixed the six sentences that could not be said in one breath.
 
 * MERGED Error bars, properly
 :PROPERTIES:
 :ID:       stats
-:FROM:     r2
+:FROM:     ch3-2
 :END:
 ** DONE Work out what the error bars mean
 CLOSED: [2026-03-10 Tue]
+:PROPERTIES:
+:ID:       stats-1
+:END:
 The old bars mixed statistical scatter with a systematic offset. They were not comparable.
 ** DONE Bootstrap over the random seeds
 CLOSED: [2026-03-19 Thu]
+:PROPERTIES:
+:ID:       stats-2
+:END:
 2000 resamples per point. Slow, but it needs to run exactly once per result set.
 ** DONE Re-ran every number in the chapter
 CLOSED: [2026-04-03 Fri]
+:PROPERTIES:
+:ID:       stats-3
+:END:
 Two conclusions got weaker, one got stronger. None of them flipped, which was a relief.
 
 * CANCELLED Bayesian re-analysis
 :PROPERTIES:
 :ID:       bayes
-:FROM:     r6
+:FROM:     ch3-6
 :END:
 ** DONE Idea: redo the fits with a Bayesian model
 CLOSED: [2026-05-15 Fri]
+:PROPERTIES:
+:ID:       bayes-1
+:END:
 Suggested at the seminar. Would give proper posteriors instead of least squares and hand-waving.
 ** DONE Prototype in PyMC
 CLOSED: [2026-05-23 Sat]
+:PROPERTIES:
+:ID:       bayes-2
+:END:
 Works on the toy problem. Sampling the full model takes nine hours and occasionally diverges.
 ** DONE Dropped: same conclusion, three weeks of compute
 CLOSED: [2026-06-05 Fri]
+:PROPERTIES:
+:ID:       bayes-3
+:END:
 The posteriors agree with the bootstrap to two digits. Worth knowing, not worth a chapter.
 
 * ACTIVE Chapter 4 — Discussion
 :PROPERTIES:
 :ID:       ch4
-:FROM:     m13
+:FROM:     main-13
 :END:
 ** DONE Outline of the discussion
 CLOSED: [2026-07-24 Fri]
+:PROPERTIES:
+:ID:       ch4-1
+:END:
 What the results mean, where they disagree with the field, and what they cannot settle.
 ** DONE Compare against the three competing approaches
 CLOSED: [2026-08-05 Wed]
 :PROPERTIES:
-:ID:       d2
+:ID:       ch4-2
 :END:
 Honest about the one case where the competing method is faster and gives the same answer.
 ** DONE Write the limitations section
 CLOSED: [2026-08-19 Wed]
+:PROPERTIES:
+:ID:       ch4-3
+:END:
 Four limitations, each with a sentence on what it would take to remove it.
 ** DONE Draft the outlook paragraph
 CLOSED: [2026-09-02 Wed]
+:PROPERTIES:
+:ID:       ch4-4
+:END:
 Two concrete experiments that would test the prediction, both doable by the group next year.
 ** DOING Rework 4.2 after the group meeting
 SCHEDULED: <2026-09-10 Thu>
+:PROPERTIES:
+:ID:       ch4-5
+:END:
 The comparison reads as defensive. It should just state the trade-off and move on.
 
 * ACTIVE Results tables
 :PROPERTIES:
 :ID:       tables
-:FROM:     d2
+:FROM:     ch4-2
 :END:
 ** DONE Decide which tables belong in the text
 CLOSED: [2026-08-12 Wed]
+:PROPERTIES:
+:ID:       tables-1
+:END:
 Two summary tables in Chapter 4, the full parameter listings go to the appendix.
 ** DONE Generate tables from the result files
 CLOSED: [2026-08-26 Wed]
+:PROPERTIES:
+:ID:       tables-2
+:END:
 LaTeX tables written directly by the pipeline, so they can never drift from the data again.
 ** DONE Table 4.1 formatting
 CLOSED: [2026-09-05 Sat]
+:PROPERTIES:
+:ID:       tables-3
+:END:
 Aligned on the decimal point, significant digits matched to the uncertainties.

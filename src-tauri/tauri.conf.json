@@ -7,7 +7,7 @@
     "frontendDist": "../ui",
     "devUrl": "http://localhost:5173",
     "beforeDevCommand": {
-      "script": "python3 -m http.server 5173 --directory ui",
+      "script": "sh scripts/serve.sh",
       "wait": false
     }
   },
