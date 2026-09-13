@@ -8,18 +8,22 @@ import { paintHeader, paintSidebar, select } from './ui.js';
 import { render } from './render.js';
 import { home } from './camera.js';
 import { relayout } from './app.js';
+import { parse } from './org.js';
+import { assignColors } from './color.js';
 
 /* The one place that knows where a project comes from. Everything downstream
    takes a parsed object, so another source — a file picker, a drop, a desktop
    shell — only has to replace this. */
-const PROJECT = 'data/example_thesis.json';
+const PROJECT = 'data/example_thesis.org';
 
 async function boot(){
   let data;
   try{
     const res = await fetch(PROJECT, {cache:'no-store'});
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    data = await res.json();
+    data = parse(await res.text());
+    assignColors(data.branches, data.nodes);
+    if (data.problems.length) console.warn('gitrove:', data.problems);
   }catch(e){
     $('#app').hidden = true;
     const err = $('#err'); err.hidden = false;
