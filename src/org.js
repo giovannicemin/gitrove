@@ -13,6 +13,9 @@ const HEAD    = /^(\*+)\s+(.*)$/;
 const META    = /^#\+([A-Za-z_]+):\s*(.*)$/;
 const PLAN    = /^\s*(CLOSED|SCHEDULED|DEADLINE):\s*[[<](\d{4}-\d{2}-\d{2})/;
 const PROP    = /^\s*:([A-Za-z_]+):\s*(.*?)\s*$/;
+const DRAWER  = /^\s*:([A-Za-z_][A-Za-z_0-9-]*):\s*$/;
+const DEND    = /^\s*:END:\s*$/;
+const OPAQUE  = /^\s*(?:[-+*]\s|\d+[.)]\s|\||#\+|:[A-Za-z_])/;   // list, table, block, drawer
 const TAGS    = /\s+(:(?:[\w@#%-]+:)+)\s*$/;
 const STAMP   = /[[<](\d{4}-\d{2}-\d{2})/;
 
@@ -29,28 +32,47 @@ function splitHead(rest){
   return {kw, title: rest.trim(), tags};
 }
 
-/** one heading and everything under it, up to the next heading */
+/** one heading and everything under it, up to the next heading.
+
+    Drawers other than :PROPERTIES: (:LOGBOOK:, :CLOCK:, anything) are recorded
+    but not interpreted, and the description is only the leading plain
+    paragraph — so lists, tables and blocks under an entry are never mistaken
+    for prose the app is free to rewrite. */
 function readEntry(lines, i){
-  const e = {head:i, plan:null, date:null, props:{}, drawer:null, body:[], end:i+1};
+  const level = lines[i].match(HEAD)[1].length;
+  const e = {head:i, level, plan:null, planKind:null, date:null,
+             props:{}, drawer:null, drawers:[], end:i+1};
   let j = i + 1;
   if (j < lines.length && PLAN.test(lines[j])){
-    e.plan = j; e.date = lines[j].match(PLAN)[2]; j++;
+    const m = lines[j].match(PLAN);
+    e.plan = j; e.planKind = m[1]; e.date = m[2]; j++;
   }
-  if (j < lines.length && /^\s*:PROPERTIES:\s*$/.test(lines[j])){
+  while (j < lines.length && DRAWER.test(lines[j])){
+    const name = lines[j].match(DRAWER)[1].toUpperCase();
     const start = j++;
-    while (j < lines.length && !/^\s*:END:\s*$/.test(lines[j])){
-      const p = lines[j].match(PROP);
-      if (p) e.props[p[1].toUpperCase()] = p[2];
-      j++;
+    while (j < lines.length && !DEND.test(lines[j]) && !HEAD.test(lines[j])) j++;
+    if (j >= lines.length || HEAD.test(lines[j])) { j = start; break; }   // unterminated
+    const d = {name, start, end: j + 1};
+    if (name === 'PROPERTIES'){
+      for (let k = start + 1; k < j; k++){
+        const p = lines[k].match(PROP);
+        if (p) e.props[p[1].toUpperCase()] = p[2];
+      }
+      e.drawer = d;
     }
-    e.drawer = {start, end: Math.min(j + 1, lines.length)};
-    j = e.drawer.end;
+    e.drawers.push(d);
+    j = d.end;
   }
   const bodyStart = j;
   while (j < lines.length && !HEAD.test(lines[j])) j++;
   let bodyEnd = j;
   while (bodyEnd > bodyStart && !lines[bodyEnd-1].trim()) bodyEnd--;   // drop trailing blanks
   e.body = {start: bodyStart, end: bodyEnd};
+
+  // the description is the leading run of plain lines, nothing more
+  let dEnd = bodyStart;
+  while (dEnd < bodyEnd && lines[dEnd].trim() && !OPAQUE.test(lines[dEnd])) dEnd++;
+  e.desc = {start: bodyStart, end: dEnd};
   e.end = j;
   return e;
 }
@@ -73,12 +95,13 @@ export function parse(text){
     const level = h[1].length;
     const {kw, title, tags} = splitHead(h[2]);
     const e = readEntry(lines, i);
-    const desc = lines.slice(e.body.start, e.body.end)
+    const desc = lines.slice(e.desc.start, e.desc.end)
                       .map(l => l.trim()).filter(Boolean).join(' ');
 
     if (level === 1){
       if (kw && !['ACTIVE','MERGED','CANCELLED'].includes(kw))
         note(i, `branch "${title}" has node keyword ${kw}`);
+      Object.assign(e, {keyword: kw, title, tags, source: lines});
       branch = {
         id: e.props.ID || slug(title), name: title,
         status: KEYWORD[kw] || 'active',
@@ -93,6 +116,7 @@ export function parse(text){
       if (kw && !['TODO','DOING','DONE'].includes(kw))
         note(i, `node "${title}" has branch keyword ${kw}`);
       const status = KEYWORD[kw] || (e.date ? 'done' : 'planned');
+      Object.assign(e, {keyword: kw, title, tags, source: lines});
       nodes.push({
         id: e.props.ID || `${branch.id}#${seq}`,
         branch: branch.id, title, desc, status, tags,

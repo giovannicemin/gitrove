@@ -18,6 +18,7 @@ No build step and no dependencies — plain ES modules, served as files.
     src/state.js        the one shared mutable object, S
     src/util.js         DOM, dates, text measurement, SVG helpers
     src/org.js          reads the org subset a project file uses
+    src/orgedit.js      changes a project file by replacing lines, never rewriting it
     src/color.js        the palette, and colours adapted to the active theme
     src/tree.js         branch hierarchy (drives the sidebar)
     src/layout.js       the layout engine — pure geometry, draws nothing
@@ -28,6 +29,7 @@ No build step and no dependencies — plain ES modules, served as files.
     src/app.js          a setting changed: recompute, then redraw
     src/main.js         entry point and control wiring
     data/example_thesis.org    a sample project — swap in your own
+    test/orgedit.test.mjs      the safety net for editing a file you also hand-edit
 
 The dependency direction is one-way: `layout` never imports `render`, `render` never
 computes a position. `window.gitrove` exposes `{S, layout, render, relayout, select}` for
@@ -92,6 +94,20 @@ recognisable. Write `:COLOR: #7aa2f7` on a branch to override one.
 
 Because the file uses real org TODO keywords and `CLOSED:`/`SCHEDULED:` timestamps, it also
 works in the Emacs agenda without any extra setup.
+
+### Your file is yours
+
+gitrove never rewrites a project file. Every change is a patch — *replace source lines
+[start,end) with these* — and they are spliced in one pass, back to front. Anything the
+parser did not model lies outside every patch, so it survives by construction rather than by
+being carefully re-emitted: `:LOGBOOK:` drawers, `#+begin_src` blocks, links, lists, tables,
+your comments and your blank lines.
+
+    node test/orgedit.test.mjs
+
+28 checks, and the ones that matter are: applying no edits returns the file byte for byte;
+retitling an entry changes exactly one line; and an entry carrying a logbook drawer, a source
+block and a list keeps all three when its description is rewritten.
 
 ## Layout
 
