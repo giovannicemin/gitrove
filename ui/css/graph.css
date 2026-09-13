@@ -24,3 +24,11 @@
   .lbl.milestone{fill:var(--fg);font-weight:600}
   .lbl.ghost{opacity:.5}
   .faded{opacity:.13}
+
+  /* While the graph is being moved, buy frame rate with fidelity. Antialiasing
+     off, label halos off, hit-testing off — all of it comes back on release.
+     The halos are the expensive part: they paint every label twice. */
+  .panning #vp{shape-rendering:optimizeSpeed;text-rendering:optimizeSpeed;
+               pointer-events:none;will-change:transform}
+  .panning .lbl,.panning .branch-name{paint-order:normal;stroke:none}
+  .panning .node circle.halo,.panning .leader{display:none}

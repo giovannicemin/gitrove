@@ -135,6 +135,14 @@ splitting across two sides halves the chances of reusing one.
 The sidebar is the opposite view: a depth-first tree with collapsible subtrees, independent
 of which row a branch ended up on.
 
+**Panning** repaints every vector on screen, so two things matter: it happens at most once
+per frame (many mousemoves coalesce into one `requestAnimationFrame`), and each repaint is
+made cheaper while the mouse is down — antialiasing off, hit-testing off, and the label
+halos off, since those paint every label twice. Full fidelity returns on release. If it is
+still not smooth on a large project, the next dial is `.panning .lbl{display:none}` in
+`ui/css/graph.css`; after that the real answer is compositing the graph as a layer rather
+than repainting it.
+
 **Labels** are wrapped at `CFG.wrapChars` and packed into collision tiers, with a leader
 line down to the node when they are not on the first tier. Lane heights are derived from
 how many tiers each row actually needed.

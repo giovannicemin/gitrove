@@ -6,17 +6,55 @@ import { $ } from './util.js';
 /* ---------- pan / zoom ------------------------------------------- */
 const svg = $('#svg');
 export const applyTransform = () => $('#vp').setAttribute('transform',`translate(${S.tx},${S.ty}) scale(${S.k})`);
+/* Panning repaints every vector on screen, so two things matter: do it at most
+   once per frame, and make each repaint cheaper while the mouse is down. The
+   fidelity comes back the moment it stops moving. */
+
+let pending = 0;
+function scheduleTransform(){
+  if (pending) return;
+  pending = requestAnimationFrame(() => { pending = 0; applyTransform(); });
+}
+
+let busy = 0, idle = 0;
+function interacting(on){
+  clearTimeout(idle);
+  if (on){
+    if (!busy++) document.body.classList.add('panning');
+  } else {
+    // one frame of grace, so a zoom made of many wheel ticks stays cheap throughout
+    idle = setTimeout(() => { busy = 0; document.body.classList.remove('panning'); applyTransform(); }, 140);
+  }
+}
+
 let drag = null;
-svg.addEventListener('mousedown', e => { drag={x:e.clientX,y:e.clientY,tx:S.tx,ty:S.ty}; svg.classList.add('grabbing'); });
-addEventListener('mousemove', e => { if (!drag) return;
-  S.tx = drag.tx + (e.clientX-drag.x); S.ty = drag.ty + (e.clientY-drag.y); applyTransform(); });
-addEventListener('mouseup', () => { drag=null; svg.classList.remove('grabbing'); });
-svg.addEventListener('wheel', e => { e.preventDefault();
+svg.addEventListener('mousedown', e => {
+  drag = {x:e.clientX, y:e.clientY, tx:S.tx, ty:S.ty};
+  svg.classList.add('grabbing');
+  interacting(true);
+});
+addEventListener('mousemove', e => {
+  if (!drag) return;
+  S.tx = drag.tx + (e.clientX - drag.x);
+  S.ty = drag.ty + (e.clientY - drag.y);
+  scheduleTransform();
+});
+addEventListener('mouseup', () => {
+  if (!drag) return;
+  drag = null; svg.classList.remove('grabbing'); interacting(false);
+});
+svg.addEventListener('wheel', e => {
+  e.preventDefault();
   const r = svg.getBoundingClientRect();
-  zoomAt(e.clientX-r.left, e.clientY-r.top, Math.exp(-e.deltaY*0.0016)); }, {passive:false});
-export function zoomAt(mx,my,factor){
-  const k = Math.min(3, Math.max(0.18, S.k*factor)), f = k/S.k;
-  S.tx = mx-(mx-S.tx)*f; S.ty = my-(my-S.ty)*f; S.k = k; applyTransform();
+  interacting(true);
+  zoomAt(e.clientX - r.left, e.clientY - r.top, Math.exp(-e.deltaY * 0.0016));
+  interacting(false);
+}, {passive:false});
+
+function zoomAt(mx, my, factor){
+  const k = Math.min(3, Math.max(0.18, S.k * factor)), f = k / S.k;
+  S.tx = mx - (mx - S.tx) * f; S.ty = my - (my - S.ty) * f; S.k = k;
+  scheduleTransform();
 }
 $('#zin').onclick  = () => { const r=svg.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1.3); };
 $('#zout').onclick = () => { const r=svg.getBoundingClientRect(); zoomAt(r.width/2,r.height/2,1/1.3); };
