@@ -4,36 +4,35 @@ A git-style commit graph for work that isn't code. Branches are **threads of wor
 nodes are things you actually did, placed on a real time axis. Only the past is drawn —
 plus one `current` node and a few ghosted `planned` ones past the TODAY line.
 
-    python3 -m http.server 5173     # then open http://localhost:5173
+## Running it
 
-No build step and no dependencies — plain ES modules, served as files.
+    npm install          # once: fetches the Tauri CLI
+    npm run dev          # the app, with the page reloading as you edit ui/
+    npm run build        # the app, packaged
 
-## Project layout
+`npm run build` leaves you three things:
 
-    index.html          markup only
-    css/base.css        palette (both themes), page shell, top bar
-    css/chrome.css      sidebar, settings card, controls, detail panel, tooltip
-    css/graph.css       the SVG: lanes, edges, nodes, labels
-    src/config.js       every tunable number
-    src/state.js        the one shared mutable object, S
-    src/util.js         DOM, dates, text measurement, SVG helpers
-    src/org.js          reads the org subset a project file uses
-    src/orgedit.js      changes a project file by replacing lines, never rewriting it
-    src/color.js        the palette, and colours adapted to the active theme
-    src/tree.js         branch hierarchy (drives the sidebar)
-    src/layout.js       the layout engine — pure geometry, draws nothing
-    src/render.js       layout to SVG — reads positions, never computes them
-    src/ui.js           header, branch tree, tooltip, detail panel
-    src/camera.js       pan, zoom, and the two framings
-    src/animate.js      springs the drawing from one layout to the next
-    src/app.js          a setting changed: recompute, then redraw
-    src/main.js         entry point and control wiring
-    data/example_thesis.org    a sample project — swap in your own
-    test/orgedit.test.mjs      the safety net for editing a file you also hand-edit
+    src-tauri/target/release/gitrove                              the binary — just run it
+    src-tauri/target/release/bundle/deb/gitrove_0.3.0_amd64.deb   sudo dpkg -i, then it is in your menu
+    src-tauri/target/release/bundle/appimage/*.AppImage           chmod +x, then run it anywhere
 
-The dependency direction is one-way: `layout` never imports `render`, `render` never
-computes a position. `window.gitrove` exposes `{S, layout, render, relayout, select}` for
-poking at from the console.
+`npm run serve` opens the same interface in a browser at http://localhost:5173, reading the
+bundled example read-only — handy for working on the drawing, useless for keeping notes.
+
+## How it fits together
+
+    ui/          the window's contents: plain ES modules, no build step, no dependencies
+    src-tauri/   the native shell: a small Rust program that opens a window and shows ui/
+
+The shell exists for the four things a web page cannot do for itself — ask you for a file,
+read one, write one, and notice when one changes underneath it. That is the whole of
+`src-tauri/src/lib.rs`. Everything else — parsing, layout, drawing, animation — is
+JavaScript, which is why the same code still runs in a plain browser.
+
+Writes go to a temporary file first and are then renamed over the original, so a crash
+mid-write leaves the old file intact rather than half a new one. The watcher polls the
+file's modification time once a second; if it changed and you have unsaved edits, you are
+asked before anything is discarded.
 
 ## The project file
 

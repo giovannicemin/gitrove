@@ -1,0 +1,15 @@
+{
+  "name": "gitrove",
+  "version": "0.3.0",
+  "private": true,
+  "description": "A git-style commit graph for work that isn't code",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "serve": "python3 -m http.server 5173 --directory ui",
+    "test": "node test/orgedit.test.mjs"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}

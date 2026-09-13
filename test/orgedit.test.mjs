@@ -3,10 +3,10 @@
    Run: node test/orgedit.test.mjs                                            */
 
 import { readFileSync } from 'fs';
-import { parse } from '../src/org.js';
-import * as E from '../src/orgedit.js';
+import { parse } from '../ui/src/org.js';
+import * as E from '../ui/src/orgedit.js';
 
-const SRC = readFileSync(new URL('../data/example_thesis.org', import.meta.url), 'utf8');
+const SRC = readFileSync(new URL('../ui/data/example_thesis.org', import.meta.url), 'utf8');
 
 let pass = 0, fail = 0;
 const ok  = (name, cond, detail='') => cond ? (pass++, console.log(`  ok   ${name}`))

@@ -26,7 +26,15 @@
   .title{display:flex;flex-direction:column;gap:1px;min-width:0}
   .title strong{font-size:15px;font-weight:600}
   .title em{font-style:normal;font-size:12px;color:var(--fg-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .stats{display:flex;gap:8px;margin-left:auto}
+  .file{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:var(--fg-dim)}
+  .file .fname{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file .dot-dirty{width:7px;height:7px;border-radius:50%;background:transparent;flex:none}
+  .file.dirty .dot-dirty{background:var(--accent)}
+  .file button{border:1px solid var(--line);background:var(--panel);color:var(--fg-dim);
+               border-radius:6px;font:inherit;font-size:11px;padding:4px 10px;cursor:pointer}
+  .file button:hover:not(:disabled){color:var(--fg);border-color:#38405a}
+  .file button:disabled{opacity:.4;cursor:default}
+  .stats{display:flex;gap:8px;margin-left:18px}
   .chip{display:flex;flex-direction:column;align-items:center;padding:5px 13px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
   .chip b{font-size:16px;font-weight:600;font-variant-numeric:tabular-nums}
   .chip span{font-size:9.5px;color:var(--fg-faint);text-transform:uppercase;letter-spacing:.08em}
