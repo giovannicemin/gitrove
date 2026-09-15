@@ -1,6 +1,9 @@
 /* The SVG itself: lanes, edges, nodes, labels. */
 
-.lane-back{fill:var(--bg)}          /* solid, so a connector can hide behind it */
+.lane-back{fill:var(--bg);opacity:var(--band-back)}
+  /* Not quite solid: a connector passing behind a branch still ghosts through,
+     so you can follow where it went. Over empty background this is invisible,
+     since the panel is the background colour. */
   .lane-band{opacity:var(--band)}
   .branch-name{font-size:12px;font-weight:600}
   .grid-line{stroke:var(--grid);stroke-width:1}

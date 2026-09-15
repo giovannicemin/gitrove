@@ -170,9 +170,11 @@ texture instead of the renderer repainting vectors.
 line down to the node when they are not on the first tier. Lane heights are derived from
 how many tiers each row actually needed.
 
-A branch's shaded band is two rectangles: an opaque panel in the page colour with the branch
-tint over it. The tint alone is about 5% — enough to see, nowhere near enough to hide a line
-drawn underneath it — so the panel is what does the occluding.
+A branch's shaded band is two rectangles: a panel in the page colour with the branch tint
+over it. The tint alone is about 5% — enough to see, nowhere near enough to hide a line
+drawn underneath it — so the panel is what does the occluding. It sits at 70% (`--band-back`),
+which leaves a connector passing behind a branch faintly visible, so you can still follow
+where it went. Over empty background the panel is invisible, being the background colour.
 
 Paint order is therefore: calendar, then the connectors between branches, then the bands,
 then everything that belongs on top of a band. A connector crossing a branch it has nothing
