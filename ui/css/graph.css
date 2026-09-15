@@ -25,13 +25,8 @@
   .lbl.ghost{opacity:.5}
   .faded{opacity:.13}
 
-  /* While the graph is being moved, buy frame rate with fidelity. Antialiasing
-     off, label halos off, hit-testing off — all of it comes back on release.
-     The halos are the expensive part: they paint every label twice. */
-  .panning #vp{shape-rendering:optimizeSpeed;text-rendering:optimizeSpeed;
-               pointer-events:none;will-change:transform}
-  /* text is the most expensive thing on the canvas. Keep the milestones as
-     landmarks so you can still tell where you are, drop the other ~128. */
-  .panning .lbl:not(.milestone){display:none}
-  .panning .lbl,.panning .branch-name{paint-order:normal;stroke:none}
-  .panning .node circle.halo,.panning .leader{display:none}
+  /* While the graph is being dragged, skip hit-testing every element under the
+     cursor and hint that the whole layer is about to move. Nothing here changes
+     how anything looks — suppressing halos and antialiasing was cheaper still,
+     but you could see the labels twitch as they re-rendered. */
+  .panning #vp{pointer-events:none;will-change:transform}

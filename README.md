@@ -135,25 +135,29 @@ splitting across two sides halves the chances of reusing one.
 The sidebar is the opposite view: a depth-first tree with collapsible subtrees, independent
 of which row a branch ended up on.
 
-**Panning** repaints every vector on screen, so two things matter: it happens at most once
-per frame (many pointermoves coalesce into one `requestAnimationFrame`), and each repaint is
-made much cheaper while the mouse is down. Antialiasing off, hit-testing off, halos off, and
-all labels hidden except the milestones, which stay as landmarks so you can still tell where
-you are — 498 elements down to 332, and 135 texts down to 40 of which none are painted
-twice. Full fidelity returns on release.
+**Panning** repaints every vector on screen, so it happens at most once per frame — many
+pointermoves coalesce into one `requestAnimationFrame` — and while the mouse is down the
+graph stops hit-testing every element under the cursor. Nothing changes how it *looks*:
+suppressing label halos and antialiasing was cheaper still, but you could see the labels
+twitch as they re-rendered, which is worse than a slightly lower frame rate.
 
-The drag uses pointer capture rather than window-level mouse listeners, so releasing the
-button outside the window still ends the drag, and the graph is `user-select: none` — it is
-something you drag, not text you select. Selecting across 136 text elements mid-drag made
-the browser paint a selection highlight on every one of them.
+The two things that actually made dragging feel bad were not frame rate at all. The graph
+was selectable, so a drag selected every label it crossed and the browser painted a
+selection highlight on all of them; it is now `user-select: none`. And the drag ended on a
+window-level `mouseup` that never arrived if you released outside the window, leaving the
+cursor stuck mid-grab; it now uses pointer capture, and a press that never travels more than
+three pixels is treated as a click rather than a drag.
 
-If it is still not smooth on a much larger project, the remaining answer is compositing the
+If it is not smooth enough on a much larger project, the remaining answer is compositing the
 graph as a layer — CSS transforms with `transform-box: view-box` — so the GPU moves a
 texture instead of the renderer repainting vectors.
 
 **Labels** are wrapped at `CFG.wrapChars` and packed into collision tiers, with a leader
 line down to the node when they are not on the first tier. Lane heights are derived from
 how many tiers each row actually needed.
+
+Paint order is calendar, then the edges, then the branch bands, then the nodes — so a line
+crossing a branch it does not belong to reads as passing behind it.
 
 Every outgoing edge leaves to the *right* of its node, climbing to a lane above (a merge)
 or dropping to one below (a fork), so each label goes where no curve of its own will run:

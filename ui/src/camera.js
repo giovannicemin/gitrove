@@ -35,26 +35,35 @@ let drag = null;
 
 function endDrag(){
   if (!drag) return;
-  const id = drag.id;
+  const { id, moved } = drag;
   drag = null;                                   // before release, so the
   try { svg.releasePointerCapture(id); } catch {} // lostpointercapture no-ops
   svg.classList.remove('grabbing');
-  interacting(false);
+  if (moved) interacting(false);
 }
+
+const SLOP = 3;          // a click wanders a pixel or two; that is not a drag
 
 svg.addEventListener('pointerdown', e => {
   if (e.button !== 0) return;
-  drag = {id: e.pointerId, x: e.clientX, y: e.clientY, tx: S.tx, ty: S.ty};
+  drag = {id: e.pointerId, x: e.clientX, y: e.clientY, tx: S.tx, ty: S.ty, moved: false};
   try { svg.setPointerCapture(e.pointerId); } catch {}
   svg.classList.add('grabbing');
-  interacting(true);
 });
 
 svg.addEventListener('pointermove', e => {
   if (!drag || e.pointerId !== drag.id) return;
   if (!(e.buttons & 1)) return endDrag();        // released somewhere we never heard about
-  S.tx = drag.tx + (e.clientX - drag.x);
-  S.ty = drag.ty + (e.clientY - drag.y);
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  // only now is it a drag, so clicking a node does not flip the graph into
+  // interaction mode for a moment
+  if (!drag.moved){
+    if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) return;
+    drag.moved = true;
+    interacting(true);
+  }
+  S.tx = drag.tx + dx;
+  S.ty = drag.ty + dy;
   scheduleTransform();
 });
 

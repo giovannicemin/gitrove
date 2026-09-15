@@ -32,24 +32,6 @@ export function render(){
     vp.append(g); vp.append(t); gfx.calendar.push(g, t);
   });
 
-  L.spans.forEach(sp => {
-    const b = S.branches.get(sp.bid), col = bcol(b), y = L.laneY.get(sp.bid);
-    const hi   = sp.bid === S.roots[0] ? L.width - 60 : sp.hi;
-    const left = sp.title.left - 14;                       // the band starts at the title
-    const anchor = L.byBranch.get(sp.bid)[0];              // the band rides with the branch
-    const rect = el('rect',{class:'lane-band','data-branch':sp.bid,x:left,y:y-25,
-                            width:hi-left+26,height:50,rx:25,fill:col});
-    vp.append(rect); gfx.bands.push({el:rect, x:left, y:y-25, id:anchor.id});
-    sp.title.lines.forEach((ln,i) => {
-      const ty = y + 4 - (sp.title.lines.length-1)*7 + i*CFG.lineH;
-      const t = el('text',{class:'branch-name','data-branch':sp.bid,'text-anchor':'end',
-                           x:sp.title.right, y:ty,
-                           fill:col, opacity: b.status === 'abandoned' ? .65 : 1});
-      t.textContent = ln; vp.append(t);
-      gfx.texts.push({el:t, x:sp.title.right, y:ty, id:anchor.id});
-    });
-  });
-
   const nw = el('line',{class:'now-line',x1:L.nowX,y1:CFG.padTop-44,x2:L.nowX,y2:L.height});
   const nl = el('text',{class:'now-label',x:L.nowX+7,y:L.height-14}); nl.textContent='TODAY';
   vp.append(nw); vp.append(nl); gfx.calendar.push(nw, nl);
@@ -73,6 +55,26 @@ export function render(){
     const p = el('path',{class:'dead-end','data-branch':sp.bid,stroke:bcol(b),
                          d:deadPath(last.x, last.y)});
     vp.append(p); gfx.deads.push({el:p, id:last.id});
+  });
+
+  // bands go on AFTER the edges, so a line that crosses a branch reads as
+  // passing behind it rather than being laid over the top
+  L.spans.forEach(sp => {
+    const b = S.branches.get(sp.bid), col = bcol(b), y = L.laneY.get(sp.bid);
+    const hi   = sp.bid === S.roots[0] ? L.width - 60 : sp.hi;
+    const left = sp.title.left - 14;                       // the band starts at the title
+    const anchor = L.byBranch.get(sp.bid)[0];              // the band rides with the branch
+    const rect = el('rect',{class:'lane-band','data-branch':sp.bid,x:left,y:y-25,
+                            width:hi-left+26,height:50,rx:25,fill:col});
+    vp.append(rect); gfx.bands.push({el:rect, x:left, y:y-25, id:anchor.id});
+    sp.title.lines.forEach((ln,i) => {
+      const ty = y + 4 - (sp.title.lines.length-1)*7 + i*CFG.lineH;
+      const t = el('text',{class:'branch-name','data-branch':sp.bid,'text-anchor':'end',
+                           x:sp.title.right, y:ty,
+                           fill:col, opacity: b.status === 'abandoned' ? .65 : 1});
+      t.textContent = ln; vp.append(t);
+      gfx.texts.push({el:t, x:sp.title.right, y:ty, id:anchor.id});
+    });
   });
 
   S.nodes.forEach(n => {
