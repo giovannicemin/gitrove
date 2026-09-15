@@ -19,7 +19,10 @@ plus one `current` node and a few ghosted `planned` ones past the TODAY line.
 The dev server is a small script rather than `python3 -m http.server`, for one reason: that
 sends no `Cache-Control`, so the webview applies heuristic freshness and shows you the
 stylesheet and modules from some minutes ago — including on a fresh run of the app, which is
-a maddening way to lose an hour. Everything it serves is `no-store`.
+a maddening way to lose an hour. Everything it serves is `no-store`, and it also stamps a
+token onto every asset URL and every relative import, derived from the newest mtime under
+`ui/`. `no-store` alone is not enough: a copy cached *before* that header existed is still
+considered fresh. Changing the URL leaves the browser no choice.
 
 The webview also keeps an on-disk cache that outlives the app. If a change still refuses to
 appear, clear it once (this keeps your theme and last-opened file, which live next door in
@@ -167,8 +170,16 @@ texture instead of the renderer repainting vectors.
 line down to the node when they are not on the first tier. Lane heights are derived from
 how many tiers each row actually needed.
 
-Paint order is calendar, then the edges, then the branch bands, then the nodes — so a line
-crossing a branch it does not belong to reads as passing behind it.
+A branch's shaded band is two rectangles: an opaque panel in the page colour with the branch
+tint over it. The tint alone is about 5% — enough to see, nowhere near enough to hide a line
+drawn underneath it — so the panel is what does the occluding.
+
+Paint order is therefore: calendar, then the connectors between branches, then the bands,
+then everything that belongs on top of a band. A connector crossing a branch it has nothing
+to do with passes behind it. Because that would also bury the parts meeting its own nodes,
+each connector is drawn three times: once in full underneath, then its first and last
+stretch again on top, split off the same curve and just long enough to clear the band it
+starts and ends on.
 
 Every outgoing edge leaves to the *right* of its node, climbing to a lane above (a merge)
 or dropping to one below (a fork), so each label goes where no curve of its own will run:

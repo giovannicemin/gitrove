@@ -5,7 +5,7 @@
    rather than being animated independently. */
 
 import { S } from './state.js';
-import { edgePath, deadPath } from './render.js';
+import { edgePath, edgeHead, edgeTail, deadPath } from './render.js';
 
 const SPRING = { zeta: .66, omega: 12, stagger: .18 };
 
@@ -71,8 +71,12 @@ export function transition(apply){
       const p = pos.get(id);
       g.setAttribute('transform', `translate(${p.x},${p.y})`);
     }
-    for (const e of gfx.edges)
-      e.el.setAttribute('d', edgePath(pos.get(e.from.id), pos.get(e.to.id), e.straight));
+    for (const e of gfx.edges){
+      const a = pos.get(e.from.id), b = pos.get(e.to.id);
+      e.el.setAttribute('d', e.kind === 'head' ? edgeHead(a, b)
+                           : e.kind === 'tail' ? edgeTail(a, b)
+                           : edgePath(a, b, e.straight));
+    }
     for (const t of gfx.texts){
       const { dx, dy } = slide(t);
       t.el.setAttribute('x', t.x + dx); t.el.setAttribute('y', t.y + dy);

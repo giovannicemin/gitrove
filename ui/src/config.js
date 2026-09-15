@@ -4,7 +4,7 @@ export const CFG = {
   pxPerDay: 9, minGap: 52, plannedGap: 118,
   padX: 96, padTop: 66,
   laneGapMin: 84, laneClear: 32,
-  r: 8.5, rMile: 12, ctrlMax: 70, laneReuseGap: 26, evenGap: 64, deadEnd: 30,
+  r: 8.5, rMile: 12, bandH: 50, ctrlMax: 70, laneReuseGap: 26, evenGap: 64, deadEnd: 30,
   wrapChars: 26, branchWrapChars: 20,
   lineH: 14, nodePad: 21, nodePadBelow: 27, tierPad: 7, labelGap: 14
 };

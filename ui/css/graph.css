@@ -1,6 +1,7 @@
 /* The SVG itself: lanes, edges, nodes, labels. */
 
-.lane-band{opacity:var(--band)}
+.lane-back{fill:var(--bg)}          /* solid, so a connector can hide behind it */
+  .lane-band{opacity:var(--band)}
   .branch-name{font-size:12px;font-weight:600}
   .grid-line{stroke:var(--grid);stroke-width:1}
   .grid-label{fill:var(--grid-fg);font-size:10px;letter-spacing:.07em;text-transform:uppercase}
