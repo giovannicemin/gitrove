@@ -18,4 +18,4 @@ if curl -fsS --max-time 2 -o /dev/null "http://localhost:$PORT/" 2>/dev/null; th
   exit 1
 fi
 
-exec python3 -m http.server "$PORT" --directory ui
+exec python3 scripts/serve.py "$PORT" ui

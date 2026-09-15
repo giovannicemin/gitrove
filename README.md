@@ -16,6 +16,17 @@ plus one `current` node and a few ghosted `planned` ones past the TODAY line.
     src-tauri/target/release/bundle/deb/gitrove_0.3.0_amd64.deb   sudo dpkg -i, then it is in your menu
     src-tauri/target/release/bundle/appimage/*.AppImage           chmod +x, then run it anywhere
 
+The dev server is a small script rather than `python3 -m http.server`, for one reason: that
+sends no `Cache-Control`, so the webview applies heuristic freshness and shows you the
+stylesheet and modules from some minutes ago — including on a fresh run of the app, which is
+a maddening way to lose an hour. Everything it serves is `no-store`.
+
+The webview also keeps an on-disk cache that outlives the app. If a change still refuses to
+appear, clear it once (this keeps your theme and last-opened file, which live next door in
+`localstorage`):
+
+    rm -rf ~/.local/share/dev.gitrove.app/WebKitCache
+
 `npm run serve` opens the same interface in a browser at http://localhost:5173, reading the
 bundled example read-only — handy for working on the drawing, useless for keeping notes.
 
